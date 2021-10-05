@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        #version 300 es
+
+        in vec3 aPosition;
+        in vec3 aColor;
+
+        out vec4 vColor;
+
+        uniform vec3 uUserCoordinates;
+        uniform vec3 uTheta;
+
+        vec3 convertCoordinates(vec3 vPosition) {
+            return vPosition / uUserCoordinates;
+        }
+       
+        vec3 rotate(vec3 aPosition) {
+            vec3 angles = radians(uTheta);
+
+            mat4 rotate_x = mat4(
+                1.0, 0.0, 0.0, 0.0,
+		        0.0, cos(angles[0]), -sin(angles[0]), 0.0,
+		        0.0, sin(angles[0]), cos(angles[0]), 0.0,
+                0.0, 0.0,  0.0, 1.0);
+
+            mat4 rotate_y = mat4(
+                cos(angles[1]), 0.0,  sin(angles[1]), 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                -sin(angles[1]), 0.0, cos(angles[1]), 0.0,
+                0.0, 0.0,  0.0, 1.0);
+            
+            mat4 rotate_z = mat4(
+                cos(angles[2]), -sin(angles[2]),  0.0, 0.0,
+                sin(angles[2]), cos(angles[2]), 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0,  0.0, 1.0);
+
+            vec4 vPosition = vec4(aPosition, 1.0);
+
+            vec4 newPosition = rotate_z * rotate_y * rotate_x * vPosition; 
+
+            return vec3(newPosition.x, newPosition.y, newPosition.z);
+        }
+               
+        void main() {
+            gl_Position = vec4(convertCoordinates(rotate(aPosition)), 1.0);
+            gl_Position.z = -gl_Position.z;
+            vColor = vec4(aColor, 1.0);
+        }
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        #version 300 es
+
+        precision mediump float;
+
+        in vec4 vColor;
+        out vec4 fColor;
+
+        void main() {
+            fColor = vColor;
+        }
+    </script>
+
+    <script type="text/javascript" src="initShaders.js"></script>
+    <script type="text/javascript" src="MVnew.js"></script>
+    <script type="text/javascript" src="robotRaiseHand.js"></script>
+
+    <body>
+        <div>
+            Hand Up/Down: -90 <input id="HandUpDown" type="range" min="0" max="180" step="1" value="1" style="width:50%"/> 90
+        </div>
+
+        <canvas id="gl-canvas" width="1200" height="600">
+            Oops ... your browser doesn't support the HTML5 canvas element
+        </canvas>
+    </body>
+</html>
