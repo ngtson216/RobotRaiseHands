@@ -126,7 +126,7 @@ function quad(a, b, c, d)
 
 function LeftArm(a, b, c, d)
 {
-    var vertexColors = vec3(1.0, 0.0, 0.0);
+    var vertexColors = vec3(0.42, 0.67, 0.101);
 
     var indices = [a, b, b, c, c, d, d, a];
     for ( var i = 0; i < indices.length; ++i ) {
